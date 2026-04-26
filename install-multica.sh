@@ -58,27 +58,35 @@ install_icon() {
     curl -sSL "https://raw.githubusercontent.com/multica-ai/multica/main/docs/assets/logo-light.svg" -o "$LIGHT_SVG"
     curl -sSL "https://raw.githubusercontent.com/multica-ai/multica/main/docs/assets/logo-dark.svg" -o "$DARK_SVG"
     
-    # Convert SVG to PNG (512x512 for high-res icon)
-    if command -v magick &>/dev/null; then
-        # ImageMagick v7+
-        magick -background none -size 512x512 "$LIGHT_SVG" "$LIGHT_PNG" 2>/dev/null && \
-        magick -background none -size 512x512 "$DARK_SVG" "$DARK_PNG" 2>/dev/null && \
-        cp "$LIGHT_PNG" "$FALLBACK_PNG" && \
-        echo "  ✓ Converted SVG to PNG (ImageMagick)" && CONVERT_SUCCESS=1 || CONVERT_FAILED=1
-    fi
+    # Try to convert SVG to PNG
+    local CONVERTED=0
     
-    if [[ -z "$CONVERT_FAILED" ]] && [[ ! -f "$LIGHT_PNG" ]]; then
-        if command -v rsvg-convert &>/dev/null; then
-            rsvg-convert -w 512 -h 512 "$LIGHT_SVG" -o "$LIGHT_PNG"
-            rsvg-convert -w 512 -h 512 "$DARK_SVG" -o "$DARK_PNG"
+    # Try rsvg-convert first (often available and works well)
+    if command -v rsvg-convert &>/dev/null; then
+        if rsvg-convert -w 512 -h 512 "$LIGHT_SVG" -o "$LIGHT_PNG" 2>/dev/null && \
+           rsvg-convert -w 512 -h 512 "$DARK_SVG" -o "$DARK_PNG" 2>/dev/null; then
             cp "$LIGHT_PNG" "$FALLBACK_PNG"
             echo "  ✓ Converted SVG to PNG (rsvg-convert)"
+            CONVERTED=1
         fi
     fi
     
-    if [[ ! -f "$LIGHT_PNG" ]]; then
-        echo -e "${YELLOW}  ⚠ SVG conversion failed. Using PNG from releases...${NC}"
-        # Fallback: download PNG from releases
+    # Try ImageMagick if rsvg failed
+    if [[ $CONVERTED -eq 0 ]] && command -v magick &>/dev/null; then
+        # ImageMagick v7+ - check if SVG is allowed
+        if magick -help 2>&1 | grep -q "SVG"; then
+            if magick -background none -size 512x512 "$LIGHT_SVG" "$LIGHT_PNG" 2>/dev/null && \
+               magick -background none -size 512x512 "$DARK_SVG" "$DARK_PNG" 2>/dev/null; then
+                cp "$LIGHT_PNG" "$FALLBACK_PNG"
+                echo "  ✓ Converted SVG to PNG (ImageMagick)"
+                CONVERTED=1
+            fi
+        fi
+    fi
+    
+    # Fallback: download PNG from releases
+    if [[ $CONVERTED -eq 0 ]]; then
+        echo -e "${YELLOW}  ⚠ SVG conversion not available. Downloading PNG from releases...${NC}"
         local PNG_URL="https://github.com/${REPO}/releases/download/v${VERSION}/icon.png"
         if curl -sSL "$PNG_URL" -o "$FALLBACK_PNG"; then
             cp "$FALLBACK_PNG" "$LIGHT_PNG"
