@@ -21,22 +21,20 @@ One-command installation script for the **Multica Desktop AppImage** — an AI-p
 - `wget`
 - `curl`
 
+## Usage
+
+```bash
+# Install
+curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica-desktop/main/install-multica.sh | bash
+
+# Update
+curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica-desktop/main/install-multica.sh | bash -s -- --update
+
+# Uninstall
+curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica-desktop/main/install-multica.sh | bash -s -- --uninstall
+```
+
 ## Launch
 
 - Terminal: `multica-desktop`
 - App launcher: Search for "Multica Desktop"
-
-## Update
-
-```bash
-./install-multica.sh --update
-# or re-run the curl command
-```
-
-## Uninstall
-
-```bash
-rm ~/.local/bin/multica-desktop
-rm ~/.local/share/applications/multica.desktop
-rm ~/.local/share/icons/multica*.png
-```
