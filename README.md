@@ -17,13 +17,7 @@ One-command installation script for [Multica](https://github.com/multica-ai/mult
 ## Usage
 
 ```bash
-# Clone this repo
-git clone https://github.com/TaQuangKhoi/install-multica.git
-cd install-multica
-
-# Run the installer
-chmod +x install-multica.sh
-./install-multica.sh
+curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica/main/install-multica.sh | bash
 ```
 
 Then launch via:
