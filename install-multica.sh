@@ -22,12 +22,13 @@ usage() {
     echo "Usage: $0 [OPTIONS]"
     echo ""
     echo "Options:"
-    echo "  -i, --install     Force install (default)"
+    echo "  -i, --install     Install (default)"
     echo "  -u, --update      Update to latest version"
     echo "  -v, --version     Show current installed version"
+    echo "  --uninstall       Uninstall Multica Desktop"
     echo "  -h, --help        Show this help"
     echo ""
-    echo "Run without arguments to install or update."
+    echo "Run without arguments to install."
 }
 
 # Get latest version from GitHub
@@ -97,6 +98,45 @@ install_icon() {
     echo "  ✓ Adaptive icon installed"
 }
 
+# Uninstall
+do_uninstall() {
+    echo -e "${YELLOW}🗑️  Uninstalling Multica Desktop...${NC}"
+    
+    local REMOVED=0
+    
+    # Remove executable
+    if [[ -f "$EXEC_PATH" ]]; then
+        rm -f "$EXEC_PATH"
+        echo "  ✓ Removed: $EXEC_PATH"
+        REMOVED=1
+    fi
+    
+    # Remove desktop file
+    if [[ -f "$DESKTOP_FILE" ]]; then
+        rm -f "$DESKTOP_FILE"
+        echo "  ✓ Removed: $DESKTOP_FILE"
+        REMOVED=1
+    fi
+    
+    # Remove icons
+    if [[ -d "$ICON_DIR" ]]; then
+        rm -f "$ICON_DIR/multica.png"
+        rm -f "$ICON_DIR/multica-light.png"
+        rm -f "$ICON_DIR/multica-dark.png"
+        rm -f "$ICON_DIR/multica-light.svg"
+        rm -f "$ICON_DIR/multica-dark.svg"
+        echo "  ✓ Removed: $ICON_DIR"
+        REMOVED=1
+    fi
+    
+    if [[ $REMOVED -eq 0 ]]; then
+        echo -e "${YELLOW}⚠️  Nothing to uninstall.${NC}"
+    else
+        echo ""
+        echo -e "${GREEN}✅ Multica Desktop uninstalled!${NC}"
+    fi
+}
+
 # Download and install
 do_install() {
     local VERSION="$1"
@@ -148,12 +188,18 @@ while [[ $# -gt 0 ]]; do
         -i|--install) ACTION="install"; shift ;;
         -u|--update) ACTION="update"; shift ;;
         -v|--version) ACTION="version"; shift ;;
+        --uninstall) ACTION="uninstall"; shift ;;
         -h|--help) usage; exit 0 ;;
         *) echo "Unknown option: $1"; usage; exit 1 ;;
     esac
 done
 
 case "$ACTION" in
+    uninstall)
+        do_uninstall
+        exit 0
+        ;;
+
     version)
         CURRENT_VERSION=$(get_installed_version)
         if [[ -n "$CURRENT_VERSION" ]]; then
