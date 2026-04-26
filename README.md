@@ -1,5 +1,9 @@
 # Multica Installer
 
+```bash
+curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica/main/install-multica.sh | bash
+```
+
 One-command installation script for [Multica](https://github.com/multica-ai/multica) — an AI-powered development platform for Linux.
 
 ## Features
@@ -14,13 +18,8 @@ One-command installation script for [Multica](https://github.com/multica-ai/mult
 - `wget`
 - `update-desktop-database` (optional, for desktop integration)
 
-## Usage
+## Launch
 
-```bash
-curl -sSL https://raw.githubusercontent.com/TaQuangKhoi/install-multica/main/install-multica.sh | bash
-```
-
-Then launch via:
 - Terminal: `multica`
 - App launcher: Search for "Multica"
 
